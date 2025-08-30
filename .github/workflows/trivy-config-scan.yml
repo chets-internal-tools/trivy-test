@@ -37,6 +37,20 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-fail.sarif'
+          category: 'trivy-config-fail'
+
+      - name: Print SARIF result count (fail)
+        if: always()
+        run: |
+          echo "Fail SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy-fail.sarif)"
+
+      - name: Upload SARIF artifact (fail)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-fail-sarif
+          path: trivy-fail.sarif
+          retention-days: 14
 
   trivy-config-pass:
     name: Trivy config scan (expected pass)
@@ -67,3 +81,17 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-pass.sarif'
+          category: 'trivy-config-pass'
+
+      - name: Print SARIF result count (pass)
+        if: always()
+        run: |
+          echo "Pass SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy-pass.sarif)"
+
+      - name: Upload SARIF artifact (pass)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-pass-sarif
+          path: trivy-pass.sarif
+          retention-days: 14

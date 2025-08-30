@@ -19,6 +19,14 @@ __rego_metadata__ := {
 	"recommended_actions": [
 		"Attach the required permissions boundary to the IAM role."
 	],
+	"custom": {
+		"input": {
+			"selector": [
+				{"type": "json"},
+				{"type": "tfplan"}
+			]
+		}
+	},
 }
 
 required_boundary := "arn:aws:iam::123456789012:policy/EnforcedBoundaryPolicy"
