@@ -24,8 +24,7 @@ jobs:
         with:
           trivy-config: './trivy/policies/trivy.yaml'
           scan-ref: './trivy/test'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
+          format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'

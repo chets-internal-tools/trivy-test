@@ -1,0 +1,32 @@
+name: Trivy Config Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  trivy-config:
+    name: Scan IaC configs with Trivy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # required for SARIF upload
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy config scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          trivy-config: 'trivy/policies/trivy.yaml'
+          # format/output/severity/exit-code are set in trivy.yaml
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
