@@ -7,12 +7,43 @@ on:
   pull_request:
 
 jobs:
-  trivy-config:
-    name: Scan IaC configs with Trivy
+  trivy-config-fail:
+    name: Trivy config scan (expected fail)
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write # required for SARIF upload
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy config scan
+        uses: aquasecurity/trivy-action@0.28.0
+        continue-on-error: true
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          trivy-config: 'trivy/policies/trivy.yaml'
+          format: 'sarif'
+          output: 'trivy-fail.sarif'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+        env:
+          TRIVY_CONFIG: trivy/policies/trivy.yaml
+          TRIVY_FILE_PATTERNS: tfplan:trivy/test/iam_role_plan_fail.json
+
+      - name: Upload Trivy fail scan to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-fail.sarif'
+
+  trivy-config-pass:
+    name: Trivy config scan (expected pass)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,19 +55,15 @@ jobs:
           scan-ref: '.'
           trivy-config: 'trivy/policies/trivy.yaml'
           format: 'sarif'
-          output: 'trivy-results.sarif'
+          output: 'trivy-pass.sarif'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
-          tf-vars: ''
-          # Use file patterns to include the Terraform plan JSON
-          # Note: this input maps to --file-patterns tfplan:<glob>
-          # The action doesn't expose file-patterns directly; pass via env var
         env:
           TRIVY_CONFIG: trivy/policies/trivy.yaml
-          TRIVY_FILE_PATTERNS: tfplan:trivy/test/*.json
+          TRIVY_FILE_PATTERNS: tfplan:trivy/test/iam_role_plan_pass.json
 
-      - name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy pass scan to GitHub Security tab
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: 'trivy-pass.sarif'

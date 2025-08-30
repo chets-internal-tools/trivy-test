@@ -1,0 +1,22 @@
+{
+  "format_version": "1.0",
+  "terraform_version": "1.6.0",
+  "resource_changes": [
+    {
+      "address": "aws_iam_role.test_fail",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "test_fail",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "test-role-fail",
+          "assume_role_policy": "{}"
+          
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}
