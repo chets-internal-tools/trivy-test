@@ -27,6 +27,13 @@ jobs:
           output: 'trivy-results.sarif'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
+          tf-vars: ''
+          # Use file patterns to include the Terraform plan JSON
+          # Note: this input maps to --file-patterns tfplan:<glob>
+          # The action doesn't expose file-patterns directly; pass via env var
+        env:
+          TRIVY_CONFIG: trivy/policies/trivy.yaml
+          TRIVY_FILE_PATTERNS: tfplan:trivy/test/*.json
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: always()

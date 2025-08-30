@@ -23,16 +23,20 @@ __rego_metadata__ := {
 
 required_boundary := "arn:aws:iam::123456789012:policy/EnforcedBoundaryPolicy"
 
-# Evaluate Terraform HCL resources (tfsec-compatible input schema)
+# Evaluate Terraform Plan JSON resources
 deny[message] {
-	input.type == "aws_iam_role"
-	not input.config.permissions_boundary
-	message := sprintf("IAM role '%s' is missing a permissions boundary.", [input.name])
+	resource := input.resource_changes[_]
+	resource.type == "aws_iam_role"
+	not resource.change.after.permissions_boundary
+
+	message := sprintf("IAM role '%s' is missing a permissions boundary.", [resource.name])
 }
 
 deny[message] {
-	input.type == "aws_iam_role"
-	boundary := input.config.permissions_boundary
+	resource := input.resource_changes[_]
+	resource.type == "aws_iam_role"
+	boundary := resource.change.after.permissions_boundary
 	boundary != required_boundary
-	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [input.name, boundary])
+
+	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [resource.name, boundary])
 }
