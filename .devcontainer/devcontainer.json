@@ -31,7 +31,8 @@
 				"Blodwynn.featurehighlight",
 				"bierner.markdown-mermaid",
 				"ms-azuretools.vscode-bicep",
-				"GitHub.vscode-pull-request-github"
+				"GitHub.vscode-pull-request-github",
+				"tsandall.opa"
 			],
 			"settings": {
 				"workbench.colorTheme": "Default Dark+",
