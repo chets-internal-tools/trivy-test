@@ -23,7 +23,10 @@ jobs:
           scan-type: 'config'
           scan-ref: '.'
           trivy-config: 'trivy/policies/trivy.yaml'
-          # format/output/severity/exit-code are set in trivy.yaml
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: always()
