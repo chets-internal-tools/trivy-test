@@ -18,6 +18,22 @@ required_boundary := "arn:aws:iam::123456789012:policy/EnforcedBoundaryPolicy"
 # Static HCL shape: resources exposed under input.resource.<type>
 # Each aws_iam_role item has attributes under .values
 
+# Direct per-resource shape (Trivy often evaluates each resource separately with type/name/values at root input)
+deny[message] {
+	input.type == "aws_iam_role"
+	not input.values.permissions_boundary
+	name := coalesce(input.values.name, "", "unknown-role")
+	message := sprintf("IAM role '%s' is missing a permissions boundary.", [name])
+}
+
+deny[message] {
+	input.type == "aws_iam_role"
+	input.values.permissions_boundary
+	input.values.permissions_boundary != required_boundary
+	name := coalesce(input.values.name, "", "unknown-role")
+	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, input.values.permissions_boundary])
+}
+
 deny[message] {
 	role := input.resource.aws_iam_role[_]
 	not role.values.permissions_boundary
