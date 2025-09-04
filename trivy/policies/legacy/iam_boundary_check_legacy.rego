@@ -10,39 +10,27 @@ __rego_metadata__ := {
 	"recommended_actions": [
 		"Attach the required permissions boundary to the IAM role."
 	],
+	"input": {"selector": [{"type": "terraform"}]}
 }
 
 required_boundary := "arn:aws:iam::123456789012:policy/EnforcedBoundaryPolicy"
 
-# Terraform plan json resources
-deny[message] {
-	resource := input.resource_changes[_]
-	resource.type == "aws_iam_role"
-	not resource.change.after.permissions_boundary
-	message := sprintf("IAM role '%s' is missing a permissions boundary.", [resource.name])
-}
+# Static HCL shape: resources exposed under input.resource.<type>
+# Each aws_iam_role item has attributes under .values
 
 deny[message] {
-	resource := input.resource_changes[_]
-	resource.type == "aws_iam_role"
-	boundary := resource.change.after.permissions_boundary
-	boundary != required_boundary
-	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [resource.name, boundary])
-}
-
-deny[message] {
-	role := input.aws_iam_role[_]
-	not role.permissions_boundary
-	name := coalesce(role.name, role.resource_name, "unknown-role")
+	role := input.resource.aws_iam_role[_]
+	not role.values.permissions_boundary
+	name := coalesce(role.values.name, "", "unknown-role")
 	message := sprintf("IAM role '%s' is missing a permissions boundary.", [name])
 }
 
 deny[message] {
-	role := input.aws_iam_role[_]
-	role.permissions_boundary
-	role.permissions_boundary != required_boundary
-	name := coalesce(role.name, role.resource_name, "unknown-role")
-	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, role.permissions_boundary])
+	role := input.resource.aws_iam_role[_]
+	role.values.permissions_boundary
+	role.values.permissions_boundary != required_boundary
+	name := coalesce(role.values.name, "", "unknown-role")
+	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, role.values.permissions_boundary])
 }
 
 # Helper: first non-empty string (legacy syntax)
