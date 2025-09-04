@@ -8,7 +8,7 @@
 #     selector:
 #       - type: json
 
-package main
+package main.iam_boundary_check.ID001
 
 __rego_metadata__ := {
 	"id": "CUSTOM_IAM_BOUNDARY_POLICY",
@@ -19,14 +19,6 @@ __rego_metadata__ := {
 	"recommended_actions": [
 		"Attach the required permissions boundary to the IAM role."
 	],
-	"custom": {
-		"input": {
-			"selector": [
-				{"type": "json"},
-				{"type": "tfplan"}
-			]
-		}
-	},
 }
 
 required_boundary := "arn:aws:iam::123456789012:policy/EnforcedBoundaryPolicy"
@@ -47,4 +39,30 @@ deny[message] {
 	boundary != required_boundary
 
 	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [resource.name, boundary])
+}
+
+deny[message] {
+    role := input.aws_iam_role[_]
+    not role.permissions_boundary
+    name := coalesce(role.name, role.resource_name, "unknown-role")
+    message := sprintf("IAM role '%s' is missing a permissions boundary.", [name])
+}
+
+deny[message] {
+    role := input.aws_iam_role[_]
+    role.permissions_boundary
+    role.permissions_boundary != required_boundary
+    name := coalesce(role.name, role.resource_name, "unknown-role")
+    message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, role.permissions_boundary])
+}
+
+# Helper: first non-empty string
+coalesce(a, b, c) = out {
+    out := a
+    a != ""
+} else = out {
+    out := b
+    b != ""
+} else = out {
+    out := c
 }

@@ -1,0 +1,22 @@
+name: Trivy Config Scan
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  trivy-config-fail:
+    name: Trivy config scan (expected fail)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Trivy config scan
+        run: |
+         trivy config --config ./trivy/trivy.yaml --format sarif --output trivy-results.sarif ./trivy/test
+        

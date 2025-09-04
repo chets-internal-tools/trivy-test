@@ -7,51 +7,6 @@ on:
   pull_request:
 
 jobs:
-  trivy-config-fail:
-    name: Trivy config scan (expected fail)
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Trivy config scan
-        uses: aquasecurity/trivy-action@0.28.0
-        continue-on-error: true
-        with:
-          scan-type: 'config'
-          scan-ref: '.'
-          trivy-config: 'trivy/policies/trivy.yaml'
-          format: 'sarif'
-          output: 'trivy-fail.sarif'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
-        env:
-          TRIVY_CONFIG: trivy/policies/trivy.yaml
-          TRIVY_FILE_PATTERNS: tfplan:trivy/test/iam_role_plan_fail.json
-
-      - name: Upload Trivy fail scan to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-fail.sarif'
-          category: 'trivy-config-fail'
-
-      - name: Print SARIF result count (fail)
-        if: always()
-        run: |
-          echo "Fail SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy-fail.sarif)"
-
-      - name: Upload SARIF artifact (fail)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-fail-sarif
-          path: trivy-fail.sarif
-          retention-days: 14
-
   trivy-config-pass:
     name: Trivy config scan (expected pass)
     runs-on: ubuntu-latest
