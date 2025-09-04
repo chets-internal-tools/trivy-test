@@ -1,0 +1,17 @@
+# Local binaries
+opa
+
+# Terraform local state and cache
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+
+# Terraform plan files
+*.plan
+
+# Trivy / OPA test artifacts
+trivy-results.sarif
+
+# macOS
+.DS_Store
