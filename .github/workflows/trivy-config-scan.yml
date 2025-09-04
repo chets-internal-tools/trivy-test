@@ -39,7 +39,7 @@ jobs:
       - name: Print SARIF result count
         if: always()
         run: |
-          echo "SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy-pass.sarif)"
+          echo "SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy.sarif)"
 
       - name: Upload SARIF artifact
         if: always()
