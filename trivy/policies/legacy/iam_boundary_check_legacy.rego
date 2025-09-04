@@ -1,3 +1,14 @@
+################################################################################
+# METADATA (comment form for older Trivy engines)
+# id: CUSTOM_IAM_BOUNDARY_POLICY_LEGACY
+# title: IAM role missing required permissions boundary (legacy)
+# severity: HIGH
+# type: terraform
+# description: IAM roles must use the EnforcedBoundaryPolicy permissions boundary.
+# recommended_actions:
+#   - Attach the required permissions boundary to the IAM role.
+################################################################################
+
 # Legacy syntax version of IAM boundary check for older Trivy/OPA
 package main.iam_boundary_check_legacy.ID001
 
@@ -46,6 +57,28 @@ deny[message] {
 	role.values.permissions_boundary
 	role.values.permissions_boundary != required_boundary
 	name := coalesce(role.values.name, "", "unknown-role")
+	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, role.values.permissions_boundary])
+}
+
+# Map-style resources (when aws_iam_role is an object keyed by resource name)
+deny[message] {
+	roles := input.resource.aws_iam_role
+	roles != null
+	some k
+	role := roles[k]
+	not role.values.permissions_boundary
+	name := coalesce(role.values.name, k, "unknown-role")
+	message := sprintf("IAM role '%s' is missing a permissions boundary.", [name])
+}
+
+deny[message] {
+	roles := input.resource.aws_iam_role
+	roles != null
+	some k
+	role := roles[k]
+	role.values.permissions_boundary
+	role.values.permissions_boundary != required_boundary
+	name := coalesce(role.values.name, k, "unknown-role")
 	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, role.values.permissions_boundary])
 }
 
