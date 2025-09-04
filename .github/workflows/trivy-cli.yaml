@@ -7,8 +7,8 @@ on:
 
 
 jobs:
-  trivy-config-fail:
-    name: Trivy config scan (expected fail)
+  trivy-config-cli:
+    name: Trivy config scan from CLI
     runs-on: ubuntu-latest
     permissions:
       contents: read

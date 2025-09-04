@@ -23,8 +23,8 @@ __rego_metadata__ := {
 
 required_boundary := "arn:aws:iam::123456789012:policy/EnforcedBoundaryPolicy"
 
-# Evaluate Terraform Plan JSON resources
-deny[message] {
+# Evaluate Terraform Plan JSON resources (updated to future syntax: contains/if)
+deny contains message if {
 	resource := input.resource_changes[_]
 	resource.type == "aws_iam_role"
 	not resource.change.after.permissions_boundary
@@ -32,7 +32,7 @@ deny[message] {
 	message := sprintf("IAM role '%s' is missing a permissions boundary.", [resource.name])
 }
 
-deny[message] {
+deny contains message if {
 	resource := input.resource_changes[_]
 	resource.type == "aws_iam_role"
 	boundary := resource.change.after.permissions_boundary
@@ -41,28 +41,29 @@ deny[message] {
 	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [resource.name, boundary])
 }
 
-deny[message] {
-    role := input.aws_iam_role[_]
-    not role.permissions_boundary
-    name := coalesce(role.name, role.resource_name, "unknown-role")
-    message := sprintf("IAM role '%s' is missing a permissions boundary.", [name])
+deny contains message if {
+	role := input.aws_iam_role[_]
+	not role.permissions_boundary
+	# Safe lookup of optional fields (avoids undefined attribute failures)
+	name := coalesce(object.get(role, "name", ""), object.get(role, "resource_name", ""), "unknown-role")
+	message := sprintf("IAM role '%s' is missing a permissions boundary.", [name])
 }
 
-deny[message] {
-    role := input.aws_iam_role[_]
-    role.permissions_boundary
-    role.permissions_boundary != required_boundary
-    name := coalesce(role.name, role.resource_name, "unknown-role")
-    message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, role.permissions_boundary])
+deny contains message if {
+	role := input.aws_iam_role[_]
+	role.permissions_boundary
+	role.permissions_boundary != required_boundary
+	name := coalesce(object.get(role, "name", ""), object.get(role, "resource_name", ""), "unknown-role")
+	message := sprintf("IAM role '%s' has an incorrect permissions boundary: '%s'.", [name, role.permissions_boundary])
 }
 
-# Helper: first non-empty string
-coalesce(a, b, c) = out {
-    out := a
-    a != ""
-} else = out {
-    out := b
-    b != ""
-} else = out {
-    out := c
+# Helper: first non-empty string (future syntax requires 'if' on bodies)
+coalesce(a, b, c) = out if {
+	out := a
+	a != ""
+} else = out if {
+	out := b
+	b != ""
+} else = out if {
+	out := c
 }

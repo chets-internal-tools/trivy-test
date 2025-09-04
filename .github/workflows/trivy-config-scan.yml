@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  trivy-config-pass:
-    name: Trivy config scan (expected pass)
+  trivy:
+    name: Trivy scan
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -20,33 +20,30 @@ jobs:
       - name: Run Trivy config scan
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: 'config'
+          scan-type: 'fs'
           scan-ref: '.'
           trivy-config: 'trivy/policies/trivy.yaml'
           format: 'sarif'
-          output: 'trivy-pass.sarif'
+          output: 'trivy.sarif'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
-        env:
-          TRIVY_CONFIG: trivy/policies/trivy.yaml
-          TRIVY_FILE_PATTERNS: tfplan:trivy/test/iam_role_plan_pass.json
 
-      - name: Upload Trivy pass scan to GitHub Security tab
+      - name: Upload Trivy scan to GitHub Security tab
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-pass.sarif'
-          category: 'trivy-config-pass'
+          sarif_file: 'trivy.sarif'
+          category: 'trivy-config'
 
-      - name: Print SARIF result count (pass)
+      - name: Print SARIF result count
         if: always()
         run: |
-          echo "Pass SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy-pass.sarif)"
+          echo "SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy-pass.sarif)"
 
-      - name: Upload SARIF artifact (pass)
+      - name: Upload SARIF artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-pass-sarif
-          path: trivy-pass.sarif
+          name: trivy-sarif
+          path: trivy.sarif
           retention-days: 14
