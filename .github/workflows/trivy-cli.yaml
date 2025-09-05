@@ -30,7 +30,7 @@ jobs:
           trivy fs \
             --scanners misconfig \
             --config-check trivy/policies/iam_check.rego \
-            --namesapce custom \
+            --namespace custom \
             --format sarif \
             --output trivy-results.sarif .
     
