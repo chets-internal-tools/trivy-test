@@ -8,11 +8,8 @@ resource "aws_iam_policy" "pass_ec2_prefix_wildcards" {
       {
   Sid    = "PassEC2PrefixWildcard"
         Effect = "Allow"
-        Action = ["ec2:Describe*", "ec2:GetConsole*" ]
-        Resource = [
-          "arn:aws:ec2:us-east-1:123456789012:instance/*",
-          "arn:aws:ec2:us-east-1:123456789012:volume/*"
-        ]
+        Action = "s3:*"
+        Resource = "*"
       }
     ]
   })
