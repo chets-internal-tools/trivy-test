@@ -29,7 +29,7 @@ jobs:
         run: |
           trivy fs \
             --scanners misconfig \
-            --config-check ./trivy/policies/iam_check.rego \
+            --config-check ./trivy/policies/iam-check.rego \
             --namespaces custom \
             --format sarif \
             --output trivy-results.sarif .
