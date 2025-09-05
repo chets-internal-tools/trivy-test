@@ -31,9 +31,9 @@ jobs:
             --scanners misconfig \
             --config-check ./trivy/policies/iam-check.rego \
             --namespaces custom \
+            --config ./configsiam/ \
             --format sarif \
             --output trivy-results.sarif .
-            ./configsiam/
     
       - name: Upload SARIF to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
