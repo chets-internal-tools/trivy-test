@@ -32,7 +32,7 @@ jobs:
             --config-check ./trivy/policies/iam-check.rego \
             --namespaces custom \
             --format sarif \
-            --o trivy-results.sarif \
+            --output trivy-results.sarif \
             ./main.tf
     
       - name: Upload SARIF to Code Scanning
