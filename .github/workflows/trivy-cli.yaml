@@ -33,6 +33,7 @@ jobs:
             --namespaces custom \
             --format sarif \
             --output trivy-results.sarif .
+            ./configsiam/
     
       - name: Upload SARIF to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
