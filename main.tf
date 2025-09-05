@@ -28,4 +28,16 @@ data "aws_iam_policy_document" "test2" {
     resources = ["*"]
     effect    = "Allow"
   }
+}
+
+data "aws_iam_policy_document" "test3" {
+  statement {
+    sid       = "AllwEc2ActionsOnAllResources"
+    actions = [
+      "ec2:CreateVolume",
+      "ec2:DeleteVolume",
+    ]
+    resources = ["*"]
+    effect    = "Allow"
+  }
 } 
