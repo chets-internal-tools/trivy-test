@@ -30,10 +30,11 @@ jobs:
           trivy fs \
             --scanners misconfig \
             --config-check ./trivy/policies/no_policy_wildcards.rego \
-            --namespaces custom \
             --format sarif \
+            --severity HIGH \
+            --exit-code 0 \
             --output trivy-results.sarif \
-            ./trivy/policies
+            ./configsiam
     
       - name: Upload SARIF to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
@@ -44,13 +45,13 @@ jobs:
       - name: Print SARIF result count
         if: always()
         run: |
-          echo "SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy.sarif)"
+          echo "SARIF results count: $(jq -r '[.runs[].results | length] | add // 0' trivy-results.sarif)"
 
       - name: Upload SARIF artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-sarif
-          path: trivy.sarif
+          path: trivy-results.sarif
           retention-days: 14
         

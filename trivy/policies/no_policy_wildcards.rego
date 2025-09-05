@@ -11,8 +11,8 @@
 #   id: AWS-0057
 #   aliases:
 #     - AVD-AWS-0057
-#     - no-policy-wildcards
-#   long_id: aws-iam-no-policy-wildcards
+#     - no_policy_wildcards
+#   long_id: aws-iam-no_policy_wildcards
 #   provider: aws
 #   service: iam
 #   severity: HIGH
