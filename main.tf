@@ -40,4 +40,6 @@ data "aws_iam_policy_document" "test3" {
     resources = ["*"]
     effect    = "Allow"
   }
-} 
+}
+
+# using for initial testing
