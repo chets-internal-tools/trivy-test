@@ -8,7 +8,7 @@ resource "aws_iam_policy" "fail_wildcard_single_string" {
       {
   Sid    = "FailSingleStringWildcard"
         Effect = "Allow"
-        Action = "ec2:*"
+        Action = "s3:*"
         Resource = "*"
       }
     ]
