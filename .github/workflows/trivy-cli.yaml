@@ -29,10 +29,8 @@ jobs:
         run: |
           trivy fs \
             --scanners misconfig \
-            --config-check ./trivy/policies/no_policy_wildcards.rego \
+            --config-check ./trivy/policies \
             --format sarif \
-            --severity HIGH \
-            --exit-code 0 \
             --output trivy-results.sarif \
             ./configsiam
     

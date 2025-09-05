@@ -1,12 +1,12 @@
 # Fails: EC2 describe wildcard and resource ARN wildcard suffix
-resource "aws_iam_policy" "ec2_resource_wildcards" {
-  name        = "ec2-resource-wildcards-policy"
+resource "aws_iam_policy" "pass_ec2_prefix_wildcards" {
+  name        = "pass-ec2-prefix-wildcards-policy"
   description = "Policy with EC2 wildcard actions and resource wildcard suffix"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "EC2Wildcard"
+  Sid    = "PassEC2PrefixWildcard"
         Effect = "Allow"
         Action = ["ec2:Describe*", "ec2:GetConsole*" ]
         Resource = [
