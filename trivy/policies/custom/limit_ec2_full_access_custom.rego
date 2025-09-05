@@ -5,7 +5,7 @@
 # schemas:
 #   - input: schema["cloud"]
 # custom:
-#   id: ID001
+#   id: ID002
 #   provider: aws
 #   service: iam
 #   severity: HIGH
@@ -13,7 +13,7 @@
 #   input:
 #     selector:
 #       - type: cloud
-package custom.limit_ec2_full_access.ID001
+package custom.limit_ec2_full_access.ID002
 
 import rego.v1
 
