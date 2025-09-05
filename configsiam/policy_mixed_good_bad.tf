@@ -14,7 +14,7 @@ resource "aws_iam_policy" "fail_mixed_good_bad" {
       {
         Sid    = "BadStatement"
         Effect = "Allow"
-        Action = ["iam:*", "iam:DeleteUser"]
+        Action = ["iam*", "iam:DeleteUser"]
         Resource = "*"
       }
     ]
