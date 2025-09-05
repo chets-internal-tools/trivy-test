@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "test2" {
   statement {
     sid       = "AllowTestS3"
     actions = [
-      "ec2:CreateVolume",
+      "ec2:*",
       "ec2:DeleteVolume",
       "kms:Encrypt",
       "kms:Decrypt",
@@ -32,10 +32,9 @@ data "aws_iam_policy_document" "test2" {
 
 data "aws_iam_policy_document" "test3" {
   statement {
-    sid       = "AllwEc2ActionsOnAllResources"
+    sid       = "AllwS3ActionsOnAllResources"
     actions = [
-      "ec2:CreateVolume",
-      "ec2:DeleteVolume",
+      "s3:*"
     ]
     resources = ["*"]
     effect    = "Allow"

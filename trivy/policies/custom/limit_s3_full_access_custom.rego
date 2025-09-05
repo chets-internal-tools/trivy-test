@@ -4,25 +4,19 @@ __rego_metadata__ := {
   "id": "CUSTOM-AWS-LIMIT-S3-FULL-ACCESS",
   "title": "Disallow unrestricted S3 IAM Policies",
   "severity": "HIGH",
-  "type": "cloud",
+  "type": "terraform",
   "description": "Ensure that the creation of unrestricted S3 IAM policies is disallowed.",
-  "recommended_actions": ["Remove or scope down s3:* and resources * in policy statements."],
-  "input": {"selector": [{"type": "cloud", "subtypes": [{"service": "iam", "provider": "aws"}]}]}
+  "recommended_actions": ["Remove or scope down s3:* and resources * in policy statements."]
+}
+
+__rego_input__ := {
+  "selector": [ {"type": "terraform"} ]
 }
 
 # Deny when an IAM policy statement (parsed cloud model) grants s3:* over * resources
 # This assumes Trivy's cloud adapted input shape; fall back to terraform resource parsing separately if needed.
 
-deny[msg] {
-  pol := input.aws.iam.policies[_]
-  st := pol.policy.document.Statement[_]
-  act := to_array(st.Action)[_]
-  startswith(act, "s3:")
-  wildcard_action(act)
-  res := to_array(st.Resource)[_]
-  res == "*"
-  msg := sprintf("IAM policy '%s' allows unrestricted S3 access with action '%s' on resource '*': %s", [pol.name, act, st.Sid])
-}
+# Cloud-adapted input path removed; focusing on terraform resource shape only for this custom rule.
 
 # Terraform HCL parsing path: iterate raw aws_iam_policy resources
 

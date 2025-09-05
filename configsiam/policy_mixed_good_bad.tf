@@ -14,7 +14,24 @@ resource "aws_iam_policy" "fail_mixed_good_bad" {
       {
         Sid    = "BadStatement"
         Effect = "Allow"
-        Action = ["iam*", "iam:DeleteUser"]
+        Action = ["ec2:*"]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Explicit EC2 full access policy (for test of custom rule)
+resource "aws_iam_policy" "fail_ec2_full_access_test" {
+  name        = "fail-ec2-full-access-test"
+  description = "Should be flagged by custom EC2 full access rule"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "EC2FullAccess"
+        Effect = "Allow"
+        Action = ["ec2:*"]
         Resource = "*"
       }
     ]
