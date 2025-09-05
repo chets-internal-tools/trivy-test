@@ -1,2 +1,2 @@
 rego:
-  check: [./trivy/policies/iam_check.rego]
+  check: [trivy/policies/no-policy-wildcards.rego]
