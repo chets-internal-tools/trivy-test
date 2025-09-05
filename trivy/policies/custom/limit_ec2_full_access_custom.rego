@@ -1,6 +1,6 @@
 # METADATA
-# title: "Disallow unrestricted S3 IAM Policies"
-# description: "Ensure that the creation of the unrestricted S3 IAM policies is disallowed."
+# title: "Disallow unrestricted EC2 IAM Policies"
+# description: "Ensure that the creation of the unrestricted EC2 IAM policies is disallowed."
 # scope: package
 # schemas:
 #   - input: schema["cloud"]
@@ -9,17 +9,15 @@
 #   provider: aws
 #   service: iam
 #   severity: HIGH
-#   recommended_action: "Create more restrictive S3 policies"
+#   recommended_action: "Create more restrictive EC2 policies"
 #   input:
 #     selector:
 #       - type: cloud
-
-package custom.limit_s3_full_access.ID001
-
+package custom.limit_ec2_full_access.ID001
 
 import rego.v1
 
-dangerous_actions := {"s3:*"}
+dangerous_actions := {"ec2:*"}
 
 is_action_allowed(statements, action_to_check) := action if {
 	some statement in statements
@@ -35,7 +33,7 @@ is_overridden_by_deny(statements, action_to_check) if {
 	lower(action) == lower(action_to_check)
 }
 
-allowed_s3_dangerous_actions(document) := [action |
+allowed_ec2_dangerous_actions(document) := [action |
 	value := json.unmarshal(document)
 	some action_to_check in dangerous_actions
 	not is_overridden_by_deny(value.Statement, action_to_check)
@@ -44,7 +42,7 @@ allowed_s3_dangerous_actions(document) := [action |
 
 deny contains res if {
 	some policy in input.aws.iam.policies
-	some action in allowed_s3_dangerous_actions(policy.document.value)
+	some action in allowed_ec2_dangerous_actions(policy.document.value)
 	res = result.new(
 		sprintf("IAM policy allows '%s' action", [action]),
 		policy.document,
@@ -54,7 +52,7 @@ deny contains res if {
 deny contains res if {
 	some role in input.aws.iam.roles
 	some policy in role.policies
-	some action in allowed_s3_dangerous_actions(policy.document.value)
+	some action in allowed_ec2_dangerous_actions(policy.document.value)
 	res = result.new(
 		sprintf("IAM role uses a policy that allows '%s' action", [action]),
 		policy.document,

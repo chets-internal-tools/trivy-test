@@ -7,7 +7,7 @@ resource "aws_iam_policy" "fail_wildcard_actions" {
       {
         Sid      = "WildCardS3"
         Effect   = "Allow"
-        Action   = ["s3:*"]
+        Action   = ["ec2:*"]
         Resource = "*"
       }
     ]

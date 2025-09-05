@@ -31,6 +31,7 @@ jobs:
             --scanners misconfig \
             --config trivy/policies/trivy.yaml \
             --format sarif \
+            --namespaces custom \
             --output trivy-results.sarif \
             ./configsiam
     
