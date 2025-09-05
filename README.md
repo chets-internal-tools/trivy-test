@@ -1,5 +1,7 @@
 # trivy-test
 
+This repo runs a scan of custom rego policies using the trivy cli scan on a github action, and outputs the result to the security overview's code scanning page.
+
 ### Local Scan
 
 Install Trivy (Linux/macOS):
