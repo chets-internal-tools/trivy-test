@@ -1,9 +1,10 @@
-name: Trivy Config Scan
+name: Trivy Config CLI Scan
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 
 jobs:
@@ -14,9 +15,28 @@ jobs:
       contents: read
       security-events: write
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.2.4
+        with:
+          version: v0.65.0
+          cache: true
+
       - name: Run Trivy config scan
         run: |
-         trivy config --config ./trivy/trivy.yaml --format sarif --output trivy-results.sarif ./trivy/test
+          trivy fs \
+            --scanners misconfig \
+            --config-check trivy/policies/iam_check.rego \
+            --namesapce custom \
+            --format sarif \
+            --output trivy-results.sarif .
+    
+      - name: Upload SARIF to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-config
         
