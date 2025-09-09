@@ -34,14 +34,6 @@ jobs:
             --namespaces custom \
             --output trivy-results.sarif \
             ./configsiam
-
-      - name: Run Trivy config scan
-        run: |
-          trivy fs \
-            --scanners misconfig \
-            --format sarif \
-            --output trivy-results.sarif \
-            ./configsiam
     
       - name: Upload SARIF to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
